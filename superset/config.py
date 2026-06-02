@@ -1681,8 +1681,13 @@ SMTP_PORT = 25
 SMTP_PASSWORD = "superset"  # noqa: S105
 SMTP_MAIL_FROM = "superset@superset.com"
 # If True creates a default SSL context with ssl.Purpose.CLIENT_AUTH using the
-# default system root CA certificates.
-SMTP_SSL_SERVER_AUTH = False
+# default system root CA certificates. This makes STARTTLS/SSL connections to the
+# SMTP server validate the server's certificate against the trusted CA store.
+# Defaults to True so the mail server identity is verified out of the box. Set to
+# False to restore the previous behavior of skipping certificate validation (for
+# example, when using a self-signed certificate that is not in the system CA
+# store).
+SMTP_SSL_SERVER_AUTH = True
 ENABLE_CHUNK_ENCODING = False
 
 # Whether to bump the logging level to ERROR on the flask_appbuilder package

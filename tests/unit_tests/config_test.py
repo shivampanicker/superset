@@ -312,3 +312,13 @@ def test_full_setting(
     assert dttm_col.is_dttm
     assert dttm_col.python_date_format == "epoch_s"
     assert dttm_col.expression == "CAST(dttm as INTEGER)"
+
+
+def test_smtp_ssl_server_auth_defaults_to_true() -> None:
+    """
+    The shipped default for SMTP_SSL_SERVER_AUTH validates the SMTP server's
+    TLS certificate. Operators can still opt out by overriding it to False.
+    """
+    from superset import config
+
+    assert config.SMTP_SSL_SERVER_AUTH is True
