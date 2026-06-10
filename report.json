@@ -3,12 +3,12 @@
   "metrics": {
     "total_tracked": 3,
     "queued": 0,
-    "working": 0,
+    "working": 1,
     "done": 0,
-    "blocked": 1,
+    "blocked": 0,
     "sessions_dispatched": 1,
     "prs_opened": 0,
-    "success_rate_pct": 0.0,
+    "success_rate_pct": null,
     "avg_time_to_pr_min": null
   },
   "issues": [
@@ -16,9 +16,9 @@
       "number": 1,
       "title": "Replace deprecated datetime.utcnow() in date/cache utilities",
       "category": "code-quality",
-      "status": "devin-blocked",
-      "session_id": "devin-1f50bd54d7e84fb28afa1c3111cce132",
-      "session_url": "https://app.devin.ai/sessions/1f50bd54d7e84fb28afa1c3111cce132",
+      "status": "devin-working",
+      "session_id": "devin-3ee36eae88ad48fc82aefc1739c2dcc6",
+      "session_url": "https://app.devin.ai/sessions/3ee36eae88ad48fc82aefc1739c2dcc6",
       "pr_url": null,
       "time_to_pr_min": null
     },
