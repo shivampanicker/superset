@@ -21,7 +21,6 @@ from typing import Any, Optional
 from . import config, gh_utils
 
 _PR_RE = re.compile(r"https://github\.com/[\w.-]+/[\w.-]+/pull/\d+")
-_DONE_RE = re.compile(r"Devin finished")
 
 
 def _status_from_labels(labels: set[str]) -> str:
@@ -60,13 +59,14 @@ def _collect(repo: str) -> list[dict[str, Any]]:
             session_id, session_url = marker
         for c in comments:
             body = c.get("body", "")
-            if config.SESSION_MARKER in body and dispatched_at is None:
+            # latest session-start marker = when the winning session was dispatched
+            if config.SESSION_MARKER in body:
                 dispatched_at = _parse_ts(c.get("created_at"))
-            if _DONE_RE.search(body):
+            # first comment carrying a real PR url = the PR-opened event
+            m = _PR_RE.search(body)
+            if m and pr is None:
+                pr = m.group(0)
                 finished_at = _parse_ts(c.get("created_at"))
-                m = _PR_RE.search(body)
-                if m:
-                    pr = m.group(0)
 
         ttp = None
         if dispatched_at and finished_at:
