@@ -1,0 +1,55 @@
+name: Devin Poll & Report
+
+# OBSERVABILITY LOOP: on a schedule (and on demand) advance every in-flight
+# Devin session, update issue labels / link PRs, and regenerate the report.
+on:
+  schedule:
+    - cron: "*/15 * * * *"   # every 15 minutes
+  workflow_dispatch:
+
+permissions:
+  issues: write
+  contents: write           # to commit REPORT.md / report.json
+
+concurrency:
+  group: devin-poll
+  cancel-in-progress: false
+
+jobs:
+  poll:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install deps
+        run: pip install -r devin_automation/requirements.txt
+
+      - name: Poll sessions + generate report
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          DEVIN_API_KEY: ${{ secrets.DEVIN_API_KEY }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+        run: python -m devin_automation.poll
+
+      - name: Upload report.json artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: devin-report
+          path: report.json
+          if-no-files-found: warn
+
+      - name: Commit refreshed REPORT.md
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add REPORT.md report.json
+          if git diff --staged --quiet; then
+            echo "No report changes."
+          else
+            git commit -m "chore(devin): refresh remediation report [skip ci]"
+            git push
+          fi
