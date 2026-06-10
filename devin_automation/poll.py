@@ -42,11 +42,14 @@ def poll_once(repo: str | None = None) -> list[dict]:
         pr = devin_client.pr_url(session)
         print(f"[poll] issue #{number}: session {sid} status={status} pr={pr}")
 
-        if status in devin_client.TERMINAL_OK and pr:
+        # An open PR is the success signal. Devin sessions frequently linger in
+        # `working` after opening the PR (awaiting review/merge), so we do NOT
+        # wait for a terminal session state — the PR existing is enough.
+        if pr:
             gh_utils.add_comment(
                 number,
-                f"✅ **Devin finished.** Pull request: {pr}\n\n"
-                f"Moving issue to `{config.LABEL_DONE}`.",
+                f"✅ **Devin opened a PR.** Pull request: {pr}\n\n"
+                f"(session status `{status}`) — moving issue to `{config.LABEL_DONE}`.",
                 repo,
             )
             gh_utils.set_lifecycle(number, config.LABEL_DONE, repo)
