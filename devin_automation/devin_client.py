@@ -43,6 +43,7 @@ def create_session(
     tags: Optional[list[str]] = None,
     idempotent: bool = True,
     structured_output_schema: Optional[dict[str, Any]] = None,
+    session_secrets: Optional[list[dict[str, Any]]] = None,
 ) -> dict[str, Any]:
     """Create a Devin session and return at least {session_id, url}."""
     if config.DEVIN_MOCK:
@@ -59,6 +60,8 @@ def create_session(
         body["tags"] = tags
     if structured_output_schema:
         body["structured_output_schema"] = structured_output_schema
+    if session_secrets:
+        body["session_secrets"] = session_secrets
 
     resp = requests.post(
         f"{config.DEVIN_BASE}/sessions", headers=_headers(), json=body, timeout=60
