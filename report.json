@@ -7,9 +7,9 @@
     "done": 1,
     "blocked": 0,
     "sessions_dispatched": 1,
-    "prs_opened": 0,
+    "prs_opened": 1,
     "success_rate_pct": 100.0,
-    "avg_time_to_pr_min": null
+    "avg_time_to_pr_min": 32.2
   },
   "issues": [
     {
@@ -19,8 +19,8 @@
       "status": "devin-done",
       "session_id": "devin-3ee36eae88ad48fc82aefc1739c2dcc6",
       "session_url": "https://app.devin.ai/sessions/3ee36eae88ad48fc82aefc1739c2dcc6",
-      "pr_url": null,
-      "time_to_pr_min": null
+      "pr_url": "https://github.com/shivampanicker/superset/pull/6",
+      "time_to_pr_min": 32.2
     },
     {
       "number": 2,

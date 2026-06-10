@@ -8,15 +8,15 @@
 | ✅ Done (PR opened) | 1 |
 | ⛔ Blocked | 0 |
 | Sessions dispatched | 1 |
-| PRs opened | 0 |
+| PRs opened | 1 |
 | **Success rate** (done / terminal) | **100.0%** |
-| Avg time issue→PR | n/a |
+| Avg time issue→PR | 32.2 min |
 
 ## Per-issue status
 
 | # | Issue | Category | Status | Session | PR | Time→PR |
 |---|---|---|---|---|---|---|
-| [#1](https://github.com/shivampanicker/superset/issues/1) | Replace deprecated datetime.utcnow() in date/cache utilities | code-quality | ✅ devin-done | [session](https://app.devin.ai/sessions/3ee36eae88ad48fc82aefc1739c2dcc6) | — | — |
+| [#1](https://github.com/shivampanicker/superset/issues/1) | Replace deprecated datetime.utcnow() in date/cache utilities | code-quality | ✅ devin-done | [session](https://app.devin.ai/sessions/3ee36eae88ad48fc82aefc1739c2dcc6) | [PR](https://github.com/shivampanicker/superset/pull/6) | 32.2 min |
 | [#2](https://github.com/shivampanicker/superset/issues/2) | Replace deprecated datetime.utcnow() in log-pruning comma… | code-quality | • untracked | — | — | — |
 | [#3](https://github.com/shivampanicker/superset/issues/3) | Replace deprecated datetime.utcnow() in Alerts & Reports … | code-quality | • untracked | — | — | — |
 
