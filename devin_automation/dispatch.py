@@ -31,10 +31,22 @@ OUTPUT_SCHEMA = {
 }
 
 
-def build_prompt(issue: dict, repo: str) -> str:
+def build_prompt(issue: dict, repo: str, with_push_token: bool = False) -> str:
     number = issue["number"]
     title = issue["title"]
     body = (issue.get("body") or "").strip()
+    push_note = ""
+    if with_push_token:
+        push_note = f"""
+# Pushing & opening the PR (a token is provided)
+A GitHub token with push + PR access to `{repo}` is provided to you as the
+session secret `GH_PUSH_TOKEN`. Use it to authenticate git WITHOUT ever printing
+the token:
+    git remote set-url origin https://x-access-token:$GH_PUSH_TOKEN@github.com/{repo}.git
+Push your `devin/issue-{number}-fix` branch and open the PR with that token
+(e.g. `GH_TOKEN=$GH_PUSH_TOKEN gh pr create --base <default-branch> ...` or the
+GitHub REST API). Do not rely on any pre-existing GitHub App integration.
+"""
     return f"""You are remediating a code issue in the GitHub repository `{repo}`.
 
 # Issue #{number}: {title}
@@ -51,7 +63,7 @@ def build_prompt(issue: dict, repo: str) -> str:
 4. Commit with a clear message and open a pull request **against `{repo}`**.
    The PR description MUST contain the line `Closes #{number}` so the issue is
    linked and auto-closed on merge.
-5. When finished, return the structured output: the opened PR url (`pr_url`), a
+{push_note}5. When finished, return the structured output: the opened PR url (`pr_url`), a
    short `summary`, and the list of `files_changed`.
 
 If the change cannot be made safely (e.g. it would break behavior and you cannot
@@ -67,13 +79,23 @@ def dispatch_issue(number: int, repo: str | None = None) -> dict:
         print(f"[dispatch] issue #{number} already {config.LABEL_WORKING}; skipping.")
         return {"skipped": True}
 
-    prompt = build_prompt(issue, repo)
+    # Option B: if a push-capable token is configured, hand it to Devin as a
+    # sensitive session secret and tell it to push/open the PR with that token.
+    session_secrets = None
+    use_token = bool(config.DEVIN_GH_PAT)
+    if use_token:
+        session_secrets = [
+            {"key": "GH_PUSH_TOKEN", "value": config.DEVIN_GH_PAT, "sensitive": True}
+        ]
+
+    prompt = build_prompt(issue, repo, with_push_token=use_token)
     session = devin_client.create_session(
         prompt,
         title=f"Remediate #{number}: {issue['title'][:80]}",
         tags=[config.LABEL_TRIGGER, f"issue-{number}", f"repo-{repo}"],
         idempotent=True,
         structured_output_schema=OUTPUT_SCHEMA,
+        session_secrets=session_secrets,
     )
     sid = session["session_id"]
     url = session.get("url", "")

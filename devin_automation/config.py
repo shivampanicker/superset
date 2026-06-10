@@ -21,6 +21,10 @@ DEVIN_BASE = os.environ.get("DEVIN_API_BASE", "https://api.devin.ai/v1")
 DEVIN_API_KEY = os.environ.get("DEVIN_API_KEY", "")
 # Cap each session's compute so a runaway task can't burn unbounded ACUs.
 DEVIN_MAX_ACU = int(os.environ.get("DEVIN_MAX_ACU", "10"))
+# Optional push-capable GitHub token handed to Devin (Option B) so it can push
+# the branch + open the PR when the Devin GitHub App isn't installed. Passed as
+# a *sensitive* session secret; if empty, Devin relies on its own integration.
+DEVIN_GH_PAT = os.environ.get("DEVIN_GH_PAT", "")
 # When truthy, devin_client returns canned responses instead of calling the API.
 DEVIN_MOCK = os.environ.get("DEVIN_MOCK", "").lower() in ("1", "true", "yes")
 

@@ -44,6 +44,9 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           DEVIN_API_KEY: ${{ secrets.DEVIN_API_KEY }}
+          # Optional (Option B): push-capable token handed to Devin so it can
+          # push + open the PR without the Devin GitHub App being installed.
+          DEVIN_GH_PAT: ${{ secrets.DEVIN_GH_PAT }}
           GITHUB_REPOSITORY: ${{ github.repository }}
         run: |
           ISSUE="${{ github.event.issue.number || github.event.inputs.issue }}"
