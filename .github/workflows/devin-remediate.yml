@@ -1,0 +1,51 @@
+name: Devin Remediate
+
+# EVENT-DRIVEN TRIGGER: fires the moment an issue is labeled `devin-fix`.
+# Also exposed as workflow_dispatch so a maintainer can kick off a specific
+# issue on demand (handy for demos / re-runs).
+on:
+  issues:
+    types: [labeled]
+  workflow_dispatch:
+    inputs:
+      issue:
+        description: "Issue number to remediate"
+        required: true
+        type: number
+
+# The script comments on issues and reads repo content.
+permissions:
+  issues: write
+  contents: read
+
+concurrency:
+  # One dispatch per issue at a time; never cancel an in-flight dispatch.
+  group: devin-remediate-${{ github.event.issue.number || github.event.inputs.issue }}
+  cancel-in-progress: false
+
+jobs:
+  dispatch:
+    # On the `issues` event, only proceed for the trigger label.
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      github.event.label.name == 'devin-fix'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install deps
+        run: pip install -r devin_automation/requirements.txt
+
+      - name: Dispatch Devin session
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          DEVIN_API_KEY: ${{ secrets.DEVIN_API_KEY }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+        run: |
+          ISSUE="${{ github.event.issue.number || github.event.inputs.issue }}"
+          echo "Dispatching remediation for issue #$ISSUE"
+          python -m devin_automation.dispatch --issue "$ISSUE"
